@@ -128,7 +128,7 @@ const IndexPage = ({ data }: PageProps<Queries.IndexPageQuery>) => {
 										<h3>Gatsby</h3>
 									</div>
 									<div className="date"><i className="material-icons">schedule</i>
-									{ new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(edge.node.date))}</div>
+									{ new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeZone: 'Asia/Tokyo' }).format(new Date(edge.node.date))}</div>
 									<h2>{edge.node.title}</h2>
 									<Link to={`/articles/${edge.node.slug}`} className="btn-s">Read more</Link>
 							</div>

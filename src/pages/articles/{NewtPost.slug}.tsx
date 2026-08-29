@@ -21,7 +21,7 @@ const ArticlePage = ({ data }: PageProps<Queries.ArticlePageQuery>) => {
           <div className="container">
             <div className='blog-detail'>
               <h1>{data.newtPost?.title}</h1>
-              <div className="date"><i className="material-icons">schedule</i>{ new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(data.newtPost?.date))}</div>
+              <div className="date"><i className="material-icons">schedule</i>{ new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeZone: 'Asia/Tokyo' }).format(new Date(data.newtPost?.date))}</div>
               <div className="blog-detail-area" dangerouslySetInnerHTML={{ __html: data.newtPost?.body + '' }} />
             </div>
           </div>
