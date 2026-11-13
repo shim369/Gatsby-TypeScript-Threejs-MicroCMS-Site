@@ -39,6 +39,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { RECAPTCHA_SECRET_KEY, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, CONTACT_TO_EMAIL } =
     process.env;
 
+  if (!SMTP_USER || !SMTP_PASS || !CONTACT_TO_EMAIL) {
+    console.error(
+      "Missing env: " +
+        ["SMTP_USER", "SMTP_PASS", "CONTACT_TO_EMAIL"]
+          .filter((k) => !process.env[k])
+          .join(", ")
+    );
+    return res.status(500).json({ error: "Mail is not configured" });
+  }
+
   if (RECAPTCHA_SECRET_KEY) {
     if (
       !googleReCaptchaToken ||

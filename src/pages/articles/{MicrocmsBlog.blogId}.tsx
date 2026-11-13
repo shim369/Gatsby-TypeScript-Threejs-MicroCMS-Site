@@ -16,8 +16,8 @@ const ArticlePage = ({ data }: PageProps<Queries.ArticlePageQuery>) => {
 
   return (
     <>
-      <div className="scroll-progress" aria-hidden="true" />
       <div className="wrapper" ref={root}>
+        <div className="scroll-progress" aria-hidden="true" />
         <header className="blog-header">
           <HeaderInner />
           <div className="main-read">

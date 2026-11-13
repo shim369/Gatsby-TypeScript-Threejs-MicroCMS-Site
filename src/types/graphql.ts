@@ -4,6 +4,7 @@ export namespace Queries {
       edges: Array<{
         node: {
           blogId: string;
+          gatsbyPath: string;
           title: string;
           publishedAt: string;
           category: { name: string } | null;

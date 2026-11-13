@@ -49,8 +49,8 @@ const IndexPage = ({ data }: PageProps<Queries.IndexPageQuery>) => {
   return (
     <>
       <ThreeScene />
-      <div className="scroll-progress" aria-hidden="true" />
       <div className="wrapper" ref={root}>
+        <div className="scroll-progress" aria-hidden="true" />
         <header>
           <HeaderInner />
           <div className="main-read">
@@ -128,7 +128,7 @@ const IndexPage = ({ data }: PageProps<Queries.IndexPageQuery>) => {
                         <time dateTime={node.publishedAt}>{formatDate(node.publishedAt)}</time>
                       </div>
                       <h2>{node.title}</h2>
-                      <Link to={`/articles/${node.blogId}`} className="btn-s">
+                      <Link to={node.gatsbyPath} className="btn-s">
                         Read more{" "}
                         <i className="material-icons" aria-hidden="true">arrow_forward</i>
                       </Link>
@@ -156,6 +156,7 @@ export const query = graphql`
       edges {
         node {
           blogId
+          gatsbyPath(filePath: "/articles/{MicrocmsBlog.blogId}")
           title
           publishedAt
           category {
