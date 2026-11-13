@@ -34,16 +34,15 @@ const config: GatsbyConfig = {
       },
     },
     {
-      resolve: 'gatsby-source-newt',
+      resolve: 'gatsby-source-microcms',
       options: {
-        enableListener: true,
-        spaceUid: process.env.NEWT_SPACE_UID,
-        token: process.env.NEWT_CDN_API_TOKEN,
-        appUid: 'blog',
-        models: [
+        apiKey: process.env.MICROCMS_API_KEY,
+        serviceId: process.env.MICROCMS_SERVICE_DOMAIN,
+        apis: [
           {
-            uid: 'article',
-            type: 'post',
+            endpoint: 'blogs',
+            type: 'blog',
+            query: { limit: 100, depth: 1 },
           },
         ],
       },
@@ -56,6 +55,10 @@ const config: GatsbyConfig = {
           {
             name: `Open Sans`,
             file: `https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap`,
+          },
+          {
+            name: `Outfit`,
+            file: `https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&display=swap`,
           },
         ],
       },

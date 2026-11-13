@@ -1,27 +1,24 @@
 export namespace Queries {
   export type IndexPageQuery = {
-    allNewtPost: {
+    allMicrocmsBlog: {
       edges: Array<{
         node: {
-          _id: string;
+          blogId: string;
           title: string;
-          slug: string;
-          category: {
-            name: string
-          };
-          coverImage: {
-            src: string;
-          };
-          date: Date;
+          publishedAt: string;
+          category: { name: string } | null;
+          eyecatch: { url: string } | null;
         };
       }>;
     };
   };
   export type ArticlePageQuery = {
-    newtPost: {
+    microcmsBlog: {
       title: string;
-      body: string;
-      date: Date;
-    };
+      content: string;
+      publishedAt: string;
+      eyecatch: { url: string } | null;
+      category: { name: string } | null;
+    } | null;
   };
 }
