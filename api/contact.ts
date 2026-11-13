@@ -13,11 +13,19 @@ const verifyRecaptcha = async (secret: string, token: string) => {
     method: "POST",
     body: new URLSearchParams({ secret, response: token }),
   });
-  const result: { success: boolean; score?: number; action?: string } =
-    await res.json();
-  return (
-    result.success && result.action === "submit" && (result.score ?? 0) >= 0.5
-  );
+  const result: {
+    success: boolean;
+    score?: number;
+    action?: string;
+    hostname?: string;
+    "error-codes"?: string[];
+  } = await res.json();
+  const ok =
+    result.success && result.action === "submit" && (result.score ?? 0) >= 0.5;
+  if (!ok) {
+    console.warn(`reCAPTCHA verification failed: ${JSON.stringify(result)}`);
+  }
+  return ok;
 };
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -50,6 +58,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (RECAPTCHA_SECRET_KEY) {
+    if (!googleReCaptchaToken) {
+      console.warn("reCAPTCHA token is missing");
+    }
     if (
       !googleReCaptchaToken ||
       !(await verifyRecaptcha(RECAPTCHA_SECRET_KEY, googleReCaptchaToken))
