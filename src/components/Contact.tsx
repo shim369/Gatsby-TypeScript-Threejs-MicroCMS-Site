@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import { useActionState, useEffect, useRef, useState, type FocusEvent } from "react";
+import { sisters } from "../data/site";
+import { ArrowRight } from "./Icons";
+import { delay } from "../utils/style";
 
 declare global {
   interface Window {
@@ -11,134 +14,157 @@ declare global {
 
 const SITE_KEY = process.env.GATSBY_RECAPTCHA_SITE_KEY;
 
-type Status = "idle" | "sending" | "success" | "error";
+const fields = ["name", "email", "message"] as const;
+type Field = (typeof fields)[number];
+type Values = Record<Field, string>;
+type Errors = Partial<Record<Field, string>>;
+type State = { status: "idle" | "invalid" | "success" | "error"; values: Values; errors: Errors };
 
+const empty: Values = { name: "", email: "", message: "" };
+
+const rules: Record<Field, (v: string) => string> = {
+  name: (v) => (v ? "" : "Please enter your name"),
+  email: (v) =>
+    !v ? "Please enter your email" : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? "" : "Please enter a valid email",
+  message: (v) => (v ? "" : "Please enter a message"),
+};
+
+// Loads reCAPTCHA v3 on first submit only, so it costs nothing until used.
 const getToken = (): Promise<string | undefined> => {
   if (!SITE_KEY) return Promise.resolve(undefined);
   return new Promise((resolve) => {
-    const load = () =>
+    const run = () =>
       window.grecaptcha!.ready(() =>
-        window
-          .grecaptcha!.execute(SITE_KEY, { action: "submit" })
-          .then(resolve)
-          .catch(() => resolve(undefined))
+        window.grecaptcha!.execute(SITE_KEY, { action: "submit" }).then(resolve, () => resolve(undefined)),
       );
-    if (window.grecaptcha) return load();
+    if (window.grecaptcha) return run();
     const script = document.createElement("script");
     script.src = `https://www.google.com/recaptcha/api.js?render=${SITE_KEY}`;
-    script.onload = load;
+    script.onload = run;
     script.onerror = () => resolve(undefined);
-    document.head.appendChild(script);
+    document.head.append(script);
   });
 };
 
-function Contact() {
-  const [status, setStatus] = useState<Status>("idle");
-  const [errors, setErrors] = useState<Record<string, string>>({});
+async function send(_: State, formData: FormData): Promise<State> {
+  const values = Object.fromEntries(fields.map((f) => [f, String(formData.get(f) ?? "").trim()])) as Values;
+  const errors: Errors = {};
+  for (const f of fields) {
+    const msg = rules[f](values[f]);
+    if (msg) errors[f] = msg;
+  }
+  if (Object.keys(errors).length) return { status: "invalid", values, errors };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const data = new FormData(form);
-    const values = {
-      name: String(data.get("name") ?? "").trim(),
-      email: String(data.get("email") ?? "").trim(),
-      message: String(data.get("message") ?? "").trim(),
-    };
+  try {
+    const res = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...values, googleReCaptchaToken: await getToken() }),
+    });
+    if (!res.ok) throw new Error(String(res.status));
+    return { status: "success", values: empty, errors: {} };
+  } catch {
+    return { status: "error", values, errors: {} };
+  }
+}
 
-    const next: Record<string, string> = {};
-    if (!values.name) next.name = "Name is required";
-    if (!values.email) next.email = "Email is required";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email))
-      next.email = "Email is invalid";
-    if (!values.message) next.message = "Message is required";
-    setErrors(next);
-    if (Object.keys(next).length) return;
+const messages: Partial<Record<State["status"], string>> = {
+  success: "Thank you! Your message has been sent.",
+  error: "Sorry, something went wrong. Please try again.",
+};
 
-    setStatus("sending");
-    try {
-      const googleReCaptchaToken = await getToken();
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...values, googleReCaptchaToken }),
-      });
-      if (!res.ok) throw new Error(String(res.status));
-      setStatus("success");
-      form.reset();
-    } catch {
-      setStatus("error");
-    }
+export default function Contact() {
+  // Returning the submitted values keeps them in the fields after React resets the form.
+  const [state, formAction, pending] = useActionState(send, { status: "idle", values: empty, errors: {} });
+  const [blurErrors, setBlurErrors] = useState<Errors>({});
+  const form = useRef<HTMLFormElement>(null);
+  const errors = { ...state.errors, ...blurErrors };
+
+  useEffect(() => {
+    setBlurErrors({});
+    if (state.status !== "invalid") return;
+    const first = fields.find((f) => state.errors[f]);
+    if (first) form.current?.querySelector<HTMLElement>(`[name="${first}"]`)?.focus();
+  }, [state]);
+
+  const check = (e: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const name = e.target.name as Field;
+    setBlurErrors((prev) => ({ ...prev, [name]: rules[name](e.target.value.trim()) }));
   };
 
+  const control = (name: Field) => ({
+    id: name,
+    name,
+    placeholder: " ",
+    defaultValue: state.values[name],
+    onBlur: check,
+    "aria-invalid": Boolean(errors[name]) || undefined,
+    "aria-describedby": `err-${name}`,
+  });
+
   return (
-    <section className="contact" id="a04">
-      <div className="container">
-        <h1 data-reveal>Contact</h1>
-        <p className="contact-read" data-reveal>
-          Have a project in mind, or just want to say hello? <br />Send me a message and I'll get back to you within a few days.
+    <section className="section contact" id="contact" data-state="contact">
+      <div className="wrap">
+        <h2 className="reveal">Say hello.</h2>
+        <p className="contact__lead reveal" style={delay(0.1)}>
+          Have a project in mind, or a question about an article? Send a message and I'll get back to you
+          within a few days.
         </p>
 
-        <form className="form-box" onSubmit={handleSubmit} noValidate data-reveal>
-          <div className="form-item">
-            <div className="field">
-              <label htmlFor="name" className="sr-only">Name</label>
-              <input id="name" name="name" placeholder="Name" autoComplete="name" />
-              {errors.name && <span className="field-error">{errors.name}</span>}
-            </div>
-            <div className="field">
-              <label htmlFor="email" className="sr-only">Email</label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="Email"
-                autoComplete="email"
-              />
-              {errors.email && <span className="field-error">{errors.email}</span>}
-            </div>
-            <div className="field">
-              <label htmlFor="message" className="sr-only">Message</label>
-              <textarea id="message" name="message" placeholder="Message"></textarea>
-              {errors.message && <span className="field-error">{errors.message}</span>}
-            </div>
-            <button type="submit" disabled={status === "sending"}>
-              {status === "sending" ? "Sending..." : "Submit"}
-            </button>
-            <p className="form-status" role="status" aria-live="polite">
-              {status === "success" && "Thank you! Your message has been sent."}
-              {status === "error" && "Sorry, something went wrong. Please try again."}
-            </p>
+        <form
+          ref={form}
+          className="form reveal"
+          action={formAction}
+          noValidate
+          style={delay(0.15)}
+        >
+          <div className="field">
+            <input {...control("name")} autoComplete="name" />
+            <label htmlFor="name">Name</label>
+            <span className="field__err" id="err-name">{errors.name}</span>
           </div>
-        </form>
-        {SITE_KEY && (
-          <p className="recaptcha">
-            This site is protected by reCAPTCHA and the Google{" "}
-            <a href="https://policies.google.com/privacy">Privacy Policy</a> and{" "}
-            <a href="https://policies.google.com/terms">Terms of Service</a> apply.
+          <div className="field">
+            <input {...control("email")} type="email" autoComplete="email" />
+            <label htmlFor="email">Email</label>
+            <span className="field__err" id="err-email">{errors.email}</span>
+          </div>
+          <div className="field">
+            <textarea {...control("message")} />
+            <label htmlFor="message">Message</label>
+            <span className="field__err" id="err-message">{errors.message}</span>
+          </div>
+          <div className="form__foot">
+            {SITE_KEY ? (
+              <p className="form__note">
+                Protected by reCAPTCHA. The Google <a href="https://policies.google.com/privacy">Privacy Policy</a>{" "}
+                and <a href="https://policies.google.com/terms">Terms of Service</a> apply.
+              </p>
+            ) : (
+              <span />
+            )}
+            <button className="btn btn--solid" type="submit" disabled={pending}>
+              {pending ? "Sending…" : "Send message"} <ArrowRight />
+            </button>
+          </div>
+          <p className="form__status" role="status" aria-live="polite">
+            {messages[state.status]}
           </p>
-        )}
+        </form>
 
-        <div className="bnr-box" data-stagger>
-          <a className="stagger-item" href="https://nextbase-gsap.vercel.app/" target="_blank" rel="noreferrer">
-            Next Base
-            <i className="material-icons" aria-hidden="true">north_east</i>
-          </a>
-          <a className="stagger-item" href="https://nuxtbase-gsap.vercel.app/" target="_blank" rel="noreferrer">
-            Nuxt Base
-            <i className="material-icons" aria-hidden="true">north_east</i>
-          </a>
-          <a className="stagger-item" href="https://astrobase.vercel.app/" target="_blank" rel="noreferrer">
-            Astro Base
-            <i className="material-icons" aria-hidden="true">north_east</i>
-          </a>
+        <div className="sisters reveal">
+          <p>Sister sites, built with the same content</p>
+          <ul>
+            {sisters.map((s) => (
+              <li key={s.url}>
+                <a className="pill" href={s.url} target="_blank" rel="noopener noreferrer">
+                  {s.name}
+                  <span className="sr"> (opens in a new tab)</span>
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
-
-        <p className="contact-read">Explore the sibling projects above, built with the same stack in different frameworks.</p>
-        <div className="contact-logo" aria-hidden="true">GATSBY BASE</div>
       </div>
     </section>
   );
 }
-
-export default Contact;

@@ -1,11 +1,16 @@
-import React from "react";
+import { site } from "../data/site";
 
-function Footer() {
+export default function Footer() {
   return (
-    <footer>
-      <small>© {new Date().getFullYear()} gatsby base</small>
+    <footer className="footer">
+      <div className="wrap">
+        <small>
+          &copy; {new Date().getFullYear()} {site.name}
+        </small>
+        <a href={site.github} target="_blank" rel="noopener noreferrer">
+          GitHub
+        </a>
+      </div>
     </footer>
   );
 }
-
-export default Footer;

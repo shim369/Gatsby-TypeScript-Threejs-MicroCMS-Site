@@ -1,170 +1,180 @@
-import React, { useRef } from "react";
-import { graphql, Link, HeadFC, PageProps } from "gatsby";
-import { Queries } from "../types/graphql";
-import "../styles/style.scss";
-import ThreeScene from "../components/ThreeScene";
-import HeaderInner from "../components/HeaderInner";
+import { graphql, Link, type HeadProps, type PageProps } from "gatsby";
 import Contact from "../components/Contact";
 import Footer from "../components/Footer";
-import { useScrollAnimations } from "../hooks/useScrollAnimations";
+import Header from "../components/Header";
+import { ArrowNE, ArrowRight } from "../components/Icons";
+import PostCover from "../components/PostCover";
+import { Seo } from "../components/Seo";
+import Space from "../components/Space";
+import { site, skills, spec } from "../data/site";
+import { useReveal } from "../hooks/useReveal";
 import { formatDate } from "../utils/formatDate";
-import about1 from "../images/about1.jpg";
-import about2 from "../images/about2.jpg";
-import about3 from "../images/about3.jpg";
-import about4 from "../images/about4.jpg";
-import astro from "../images/astro.webp";
-import js from "../images/js.webp";
-import next from "../images/next.webp";
-import nuxt from "../images/nuxt.webp";
-import py from "../images/py.webp";
-import figma from "../images/figma.webp";
+import { delay } from "../utils/style";
 
-const skills = [
-  { name: "Astro", img: astro, alt: "Astro", text: "Content-first sites that ship almost no JavaScript, with islands where interaction is needed." },
-  { name: "JavaScript", img: js, alt: "JavaScript", text: "Modern ES features for interactive UI, animation and the everyday logic behind the front end." },
-  { name: "Next.js", img: next, alt: "Next.js", text: "Full-stack React apps with SSR, SSG and the App Router, deployed on Vercel." },
-  { name: "Nuxt.js", img: nuxt, alt: "Nuxt.js", text: "Vue-powered apps with server rendering and a smooth developer experience." },
-  { name: "Python", img: py, alt: "Python", text: "Automation scripts, data wrangling and small back-end APIs." },
-  { name: "Figma", img: figma, alt: "Figma", text: "UI design and prototyping, then handing clean specs over to development." },
-];
-
-const aboutText = [
-  "I build fast, accessible and good-looking websites, mostly with TypeScript and React. I like adding a little motion and 3D to make a page feel alive without getting in the way.",
-  "This site is made with Gatsby, Three.js and GSAP. Articles live in microCMS, so new posts go live without touching the code, and the contact form delivers straight to my inbox.",
-  "I also keep sibling projects built with Next.js, Nuxt and Astro. Take a look around, and get in touch if you'd like to work together.",
-];
-
-const IndexPage = ({ data }: PageProps<Queries.IndexPageQuery>) => {
-  const root = useRef<HTMLDivElement>(null);
-  useScrollAnimations(root);
-
-  const posts = [...data.allMicrocmsBlog.edges]
-    .sort(
-      (a, b) =>
-        new Date(b.node.publishedAt).getTime() -
-        new Date(a.node.publishedAt).getTime()
-    )
-    .slice(0, 3);
+export default function IndexPage({ data }: PageProps<Queries.IndexPageQuery>) {
+  useReveal();
+  const posts = data.allMicrocmsBlog.nodes;
 
   return (
     <>
-      <ThreeScene />
-      <div className="wrapper" ref={root}>
-        <div className="scroll-progress" aria-hidden="true" />
-        <header>
-          <HeaderInner />
-          <div className="main-read">
-            <p className="eyebrow">Portfolio · Gatsby Base</p>
-            <h1>
-              Web <span>Development</span>
-            </h1>
-            <ul className="tech-chips" aria-label="Tech stack">
-              <li>Gatsby</li>
-              <li>TypeScript</li>
-              <li>Three.js</li>
-              <li>GSAP</li>
-              <li>microCMS</li>
+      <Space />
+      <div className="progress" aria-hidden="true" />
+      <Header home />
+
+      <section className="hero" id="top" data-state="hero">
+        <div className="wrap">
+          <p className="hero__line intro" style={delay(0.1)}>
+            <b>{site.name}</b> — a portfolio and blog
+          </p>
+          <h1 className="hero__title intro" style={delay(0.2)}>
+            <span>Web</span>
+            <span className="ln2">Development</span>
+          </h1>
+          <p className="hero__lead intro" style={delay(0.35)}>
+            Fast, accessible websites built with Gatsby, TypeScript and Three.js. Articles are written in
+            microCMS and published as static pages.
+          </p>
+          <div className="hero__actions intro" style={delay(0.45)}>
+            <a href="#blog" className="btn btn--solid">
+              Read the blog <ArrowRight />
+            </a>
+            <a href="#contact" className="btn btn--ghost">
+              Get in touch
+            </a>
+          </div>
+        </div>
+        <p className="hero__orbit intro" style={delay(0.8)}>
+          The labels circling the planet are sister sites — the same microCMS content, built with Astro,
+          Next.js, Nuxt and SvelteKit.
+        </p>
+      </section>
+
+      <main>
+        <section className="section about" id="about" data-state="about">
+          <div className="wrap">
+            <div className="head reveal">
+              <h2>About</h2>
+              <p>Who builds this, and how</p>
+            </div>
+            <div className="about__grid">
+              <div>
+                <p className="about__statement reveal">
+                  I build websites that <b>load fast</b>, <b>read well</b> and move only when it helps.
+                </p>
+                <div className="about__text reveal" style={delay(0.1)}>
+                  <p>
+                    Mostly with TypeScript and React. A little motion and 3D can make a page feel alive, as long
+                    as it never gets in the way of reading.
+                  </p>
+                  <p>
+                    This site is made with Gatsby and Three.js. Articles live in microCMS, so new posts go live
+                    without touching the code, and the contact form delivers straight to my inbox.
+                  </p>
+                </div>
+                <dl className="spec reveal" style={delay(0.2)}>
+                  {spec.map((s) => (
+                    <div key={s.label}>
+                      <dt>{s.label}</dt>
+                      <dd>{s.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="section skills" id="skills" data-state="skills">
+          <div className="wrap">
+            <div className="head reveal">
+              <h2>Skills</h2>
+              <p>What I build with, and where to see it</p>
+            </div>
+            <ul className="skill-list">
+              {skills.map((s, i) => (
+                <li key={s.name} className="skill reveal" style={delay((i % 3) * 0.06)}>
+                  <div className="skill__name">
+                    <span className={`skill__icon${s.here ? " skill__icon--here" : ""}`}>
+                      <img src={s.icon} alt="" width={44} height={44} loading="lazy" />
+                    </span>
+                    {s.name}
+                  </div>
+                  <p>{s.text}</p>
+                  {s.here ? (
+                    <span className="skill__here">You are here</span>
+                  ) : s.demo ? (
+                    <a className="skill__go" href={s.demo} target="_blank" rel="noopener noreferrer">
+                      Sister site <ArrowNE />
+                      <span className="sr">: {s.name} version (opens in a new tab)</span>
+                    </a>
+                  ) : (
+                    <span />
+                  )}
+                </li>
+              ))}
             </ul>
           </div>
-          <a href="#a01" className="scroll-down">
-            Scroll
-          </a>
-        </header>
-        <main>
-          <section className="about" id="a01">
-            <div className="container">
-              <h1 data-reveal>About</h1>
-              <div className="flex-box">
-                <div className="flex-image" data-stagger-left>
-                  {[about1, about2, about3, about4].map((src, i) => (
-                    <img key={i} src={src} alt={`about${i + 1}`} />
-                  ))}
-                </div>
-                <div className="flex-text">
-                  {aboutText.map((t, i) => (
-                    <p key={i} data-reveal data-reveal-delay={i * 0.1}>
-                      {t}
-                    </p>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
+        </section>
 
-          <section id="a02">
-            <div className="container skills">
-              <h1 data-reveal>Skills</h1>
-              <ul className="skills-detail" data-stagger>
-                {skills.map((s) => (
-                  <li key={s.name} className="stagger-item">
-                    <div className="skills-img">
-                      <img src={s.img} alt={s.alt} />
-                    </div>
-                    <div className="skills-text">
-                      <h2>{s.name}</h2>
-                      <p>{s.text}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+        <section className="section blog" id="blog" data-state="blog">
+          <div className="wrap">
+            <div className="head reveal">
+              <h2>Blog</h2>
+              <p>Notes from building this site</p>
             </div>
-          </section>
-
-          <section className="blog" id="a03">
-            <div className="container">
-              <h1 data-reveal>Blog</h1>
-              <div className="blog-area" data-stagger>
-                {posts.map(({ node }) => (
-                  <article className="blog-card stagger-item" key={node.blogId}>
-                    <div className="img-category">
-                      {node.eyecatch?.url && (
-                        <img src={node.eyecatch.url} alt={node.title} loading="lazy" />
-                      )}
-                      {node.category?.name && <h3>{node.category.name}</h3>}
+            {posts.length ? (
+              <div className="posts">
+                {posts.map((post, i) => (
+                  <Link
+                    key={post.id}
+                    to={post.gatsbyPath ?? "/"}
+                    className={`post${i === 0 ? " post--lead" : ""} reveal`}
+                    style={delay(i * 0.1)}
+                  >
+                    <div className="post__cover">
+                      <PostCover eyecatch={post.eyecatch} seed={i} />
+                      {post.category?.name && <span className="post__cat">{post.category.name}</span>}
                     </div>
-                    <div className="card-body">
-                      <div className="date">
-                        <i className="material-icons" aria-hidden="true">schedule</i>
-                        <time dateTime={node.publishedAt}>{formatDate(node.publishedAt)}</time>
-                      </div>
-                      <h2>{node.title}</h2>
-                      <Link to={node.gatsbyPath} className="btn-s">
-                        Read more{" "}
-                        <i className="material-icons" aria-hidden="true">arrow_forward</i>
-                      </Link>
+                    <div>
+                      <time dateTime={post.publishedAt ?? undefined}>{formatDate(post.publishedAt)}</time>
+                      <h3>
+                        <span>{post.title}</span>
+                      </h3>
                     </div>
-                  </article>
+                  </Link>
                 ))}
               </div>
-            </div>
-          </section>
-          <Contact />
-        </main>
-        <Footer />
-      </div>
+            ) : (
+              <p className="empty">No posts yet.</p>
+            )}
+          </div>
+        </section>
+
+        <Contact />
+      </main>
+
+      <Footer />
     </>
   );
-};
+}
 
-export default IndexPage;
-
-export const Head: HeadFC = () => <title>GATSBY BASE</title>;
+export const Head = (_: HeadProps) => <Seo />;
 
 export const query = graphql`
   query IndexPage {
-    allMicrocmsBlog {
-      edges {
-        node {
-          blogId
-          gatsbyPath(filePath: "/articles/{MicrocmsBlog.blogId}")
-          title
-          publishedAt
-          category {
-            name
-          }
-          eyecatch {
-            url
-          }
+    allMicrocmsBlog(sort: { publishedAt: DESC }, limit: 3) {
+      nodes {
+        id
+        gatsbyPath(filePath: "/articles/{MicrocmsBlog.blogId}")
+        title
+        publishedAt
+        category {
+          name
+        }
+        eyecatch {
+          url
+          width
+          height
         }
       }
     }
