@@ -56,7 +56,8 @@ async function send(_: State, formData: FormData): Promise<State> {
   if (Object.keys(errors).length) return { status: "invalid", values, errors };
 
   try {
-    const res = await fetch("/api/contact", {
+    // Vercel adds a trailing slash to URLs, so this avoids a 308 redirect
+    const res = await fetch("/api/contact/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...values, googleReCaptchaToken: await getToken() }),
