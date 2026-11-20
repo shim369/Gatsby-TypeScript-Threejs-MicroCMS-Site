@@ -1,9 +1,9 @@
 node_modules/
 .cache/
-public
+public/
 src/gatsby-types.d.ts
 .env
 .env.*
 !.env.example
+.vercel
 .DS_Store
-src/__generated__/

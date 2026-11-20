@@ -1,14 +1,16 @@
 {
-  "name": "gatsby-site",
-  "version": "1.0.0",
+  "name": "gatsby-base",
+  "version": "2.0.0",
   "private": true,
-  "description": "gatsby-site",
+  "description": "Portfolio and blog built with Gatsby, TypeScript, Three.js and microCMS",
   "author": "ohtani shimpei",
   "keywords": [
-    "gatsby"
+    "gatsby",
+    "threejs",
+    "microcms"
   ],
   "engines": {
-    "node": "22.x"
+    "node": "24.x"
   },
   "scripts": {
     "develop": "gatsby develop",
@@ -19,29 +21,26 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "gatsby": "^5.9.0",
-    "gatsby-omni-font-loader": "^2.0.2",
-    "gatsby-plugin-google-fonts": "^1.0.1",
-    "gatsby-plugin-manifest": "^5.9.0",
-    "gatsby-plugin-root-import": "^2.0.9",
-    "gatsby-plugin-sass": "^6.9.0",
-    "gatsby-plugin-typegen": "^3.1.0",
+    "@fontsource-variable/instrument-sans": "^5.3.0",
+    "@fontsource-variable/unbounded": "^5.3.0",
+    "gatsby": "^5.16.1",
+    "gatsby-plugin-sass": "^6.16.0",
     "gatsby-source-microcms": "^3.0.1",
-    "gsap": "^3.15.1",
-    "microcms-js-sdk": "^3.6.0",
-    "nodemailer": "^10.5.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "sass": "^1.62.0",
-    "three": "^0.151.3"
+    "nodemailer": "^10.6.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "sass": "^1.108.2",
+    "three": "^0.187.0"
   },
   "devDependencies": {
-    "@types/node": "^18.15.11",
+    "@types/node": "^24.0.0",
     "@types/nodemailer": "^8.0.2",
-    "@types/react": "^18.0.35",
-    "@types/react-dom": "^18.0.11",
-    "@types/three": "^0.150.2",
-    "@vercel/node": "^30.0.0",
-    "typescript": "^5.0.4"
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/three": "^0.187.0",
+    "typescript": "^7.0.2"
+  },
+  "overrides": {
+    "sharp": "^0.35.5"
   }
 }
