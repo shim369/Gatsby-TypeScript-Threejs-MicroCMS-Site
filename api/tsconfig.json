@@ -1,0 +1,15 @@
+{
+  // Vercel compiles api/ with this file (the nearest tsconfig). package.json has
+  // no "type": "module", so functions must be emitted as CommonJS; the root
+  // tsconfig's ESM output crashes on load (FUNCTION_INVOCATION_FAILED).
+  "compilerOptions": {
+    "target": "es2023",
+    "module": "commonjs",
+    "lib": ["es2023", "dom"],
+    "types": ["node"],
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["./**/*.ts"]
+}
