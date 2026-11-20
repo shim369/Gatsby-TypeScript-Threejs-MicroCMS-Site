@@ -5,11 +5,12 @@ type Props = {
   title?: string;
   description?: string;
   image?: string;
+  article?: boolean;
   children?: ReactNode;
 };
 
 /** Shared <head> for the Gatsby Head API. */
-export function Seo({ title, description = site.description, image, children }: Props) {
+export function Seo({ title, description = site.description, image, article = false, children }: Props) {
   const fullTitle = title ? `${title} | ${site.name}` : site.title;
   return (
     <>
@@ -19,7 +20,7 @@ export function Seo({ title, description = site.description, image, children }: 
       <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
-      <meta property="og:type" content={title ? "article" : "website"} />
+      <meta property="og:type" content={article ? "article" : "website"} />
       {image && <meta property="og:image" content={image} />}
       <meta name="twitter:card" content={image ? "summary_large_image" : "summary"} />
       {children}

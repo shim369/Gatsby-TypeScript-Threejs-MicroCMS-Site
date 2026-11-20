@@ -46,6 +46,7 @@ export const Head = ({ data }: HeadProps<Queries.ArticlePageQuery>) => (
   <Seo
     title={data.microcmsBlog?.title ?? undefined}
     image={data.microcmsBlog?.eyecatch?.url ?? undefined}
+    article
   />
 );
 
