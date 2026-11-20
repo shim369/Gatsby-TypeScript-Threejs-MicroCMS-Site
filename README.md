@@ -106,6 +106,8 @@ static/                   earth.webp (planet texture), favicon.svg
 
 Import the repository in Vercel. It detects Gatsby, and every file in `api/` is deployed as a Vercel Function. Add the environment variables listed above, then deploy.
 
+Pages are static, so publishing a post in microCMS needs a rebuild. To do this automatically, create a Deploy Hook in the Vercel project settings and add its URL as a webhook in the microCMS `blogs` API settings. Each publish, update or delete then triggers a new deployment.
+
 ## Notes
 
 - `package.json` overrides `sharp` with a current version. Gatsby's optional `gatsby-sharp` still asks for sharp 0.32, which has no prebuilt binary for recent Node versions and fails to build from source. This site doesn't process images with sharp.

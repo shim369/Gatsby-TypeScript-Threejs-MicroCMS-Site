@@ -106,6 +106,8 @@ static/                   earth.webp（地球のテクスチャ）、favicon.svg
 
 Vercel でリポジトリをインポートすると Gatsby として認識され、`api/` 内のファイルは Vercel Functions としてデプロイされます。上記の環境変数を登録してからデプロイしてください。
 
+ページは静的に生成されるため、microCMS で記事を公開したら再ビルドが必要です。自動化するには、Vercel のプロジェクト設定で Deploy Hook を作成し、その URL を microCMS の `blogs` API の Webhook に登録します。これで記事の公開・更新・削除のたびに自動でデプロイされます。
+
 ## 補足
 
 - `package.json` の `overrides` で `sharp` を新しいバージョンに差し替えています。Gatsby の optional 依存 `gatsby-sharp` は今も sharp 0.32 を要求しますが、このバージョンには最近の Node 向けのビルド済みバイナリが無く、ソースからのビルドにも失敗するためです。このサイトでは sharp による画像処理はしていません。
