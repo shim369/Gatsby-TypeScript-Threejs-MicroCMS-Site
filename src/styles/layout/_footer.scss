@@ -1,0 +1,29 @@
+main,
+.hero,
+.footer {
+  position: relative;
+  z-index: 1;
+}
+
+.footer {
+  padding: 28px 0 34px;
+  background: rgb(10 7 19 / 0.82);
+  border-top: 1px solid var(--line);
+
+  .wrap {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.84rem;
+    color: var(--lav-sub);
+  }
+
+  a {
+    text-decoration: none;
+
+    &:hover {
+      color: var(--lav);
+    }
+  }
+}

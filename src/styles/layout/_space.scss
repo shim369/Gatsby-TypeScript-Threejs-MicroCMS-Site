@@ -1,0 +1,87 @@
+@use "../abstracts/mixins" as *;
+
+// Fixed WebGL canvas behind the page
+.space {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+// Sister-site labels that follow the satellites
+.sat-labels {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.sat {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px 6px 8px;
+  border-radius: 999px;
+  @include glass;
+  @include outline;
+  font: 500 0.78rem/1 var(--body);
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  color: var(--lav);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    box-shadow 0.3s,
+    color 0.3s;
+  will-change: transform, opacity;
+
+  &::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--flare);
+    box-shadow: 0 0 10px var(--flare);
+  }
+
+  &:hover {
+    color: #fff;
+    @include outline(var(--flare));
+  }
+
+  svg {
+    width: 11px;
+    height: 11px;
+    opacity: 0.6;
+  }
+}
+
+// Reading progress, driven by a CSS scroll timeline (no JavaScript).
+.progress {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 60;
+  width: 100%;
+  height: 2px;
+  background: var(--flare);
+  transform-origin: left;
+  transform: scaleX(0);
+
+  @supports (animation-timeline: scroll()) {
+    animation: progress linear both;
+    animation-timeline: scroll(root);
+  }
+}
+
+@keyframes progress {
+  to {
+    transform: scaleX(1);
+  }
+}

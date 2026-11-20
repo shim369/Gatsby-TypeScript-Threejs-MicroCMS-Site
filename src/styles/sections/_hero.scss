@@ -1,0 +1,84 @@
+@use "../abstracts/mixins" as *;
+
+.hero {
+  display: grid;
+  align-items: center;
+  min-height: 100svh;
+  padding-block: 120px 160px;
+
+  @include down(sm) {
+    align-items: start;
+    padding-top: 118px;
+  }
+
+  &__line {
+    font-size: 0.95rem;
+    color: var(--lav-sub);
+
+    b {
+      font-weight: 500;
+      color: var(--lav);
+    }
+  }
+
+  &__title {
+    margin-top: 22px;
+    font: 300 clamp(3rem, 9.2vw, 9.4rem)/0.94 var(--display);
+    letter-spacing: -0.035em;
+
+    @include down(sm) {
+      font-size: 10.6vw;
+    }
+
+    span {
+      display: block;
+    }
+
+    .ln2 {
+      padding-left: 0.5em;
+      font-weight: 500;
+
+      @include down(sm) {
+        padding-left: 0;
+      }
+    }
+  }
+
+  &__lead {
+    max-width: 30em;
+    margin-top: 30px;
+    color: var(--lav-sub);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 34px;
+  }
+
+  &__orbit {
+    position: absolute;
+    left: var(--gutter);
+    bottom: 42px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    max-width: 22em;
+    font-size: 0.86rem;
+    color: var(--lav-sub);
+
+    @include down(sm) {
+      display: none;
+    }
+
+    &::before {
+      content: "";
+      flex: none;
+      width: 28px;
+      height: 1px;
+      margin-top: 0.55em;
+      background: var(--flare);
+    }
+  }
+}

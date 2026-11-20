@@ -1,0 +1,45 @@
+// Hero intro: pure CSS, so the first paint never waits for JavaScript.
+.intro {
+  animation: intro 1.1s var(--ease) var(--d, 0s) both;
+}
+
+@keyframes intro {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+}
+
+// Scroll reveal. Only hidden when scripting runs, because useReveal adds .is-in.
+@media (scripting: enabled) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition:
+      opacity 0.9s var(--ease) var(--d, 0s),
+      transform 1s var(--ease) var(--d, 0s);
+
+    &.is-in {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

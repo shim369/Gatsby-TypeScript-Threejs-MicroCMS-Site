@@ -1,0 +1,36 @@
+// Contact sits above the planet's horizon
+.contact {
+  min-height: 100svh;
+  padding-bottom: clamp(140px, 22vh, 260px);
+  text-align: center;
+  background: linear-gradient(rgb(20 13 36 / 0.96), rgb(10 7 19 / 0) 260px);
+
+  h2 {
+    font: 300 clamp(3.2rem, 11vw, 10rem)/0.9 var(--display);
+    letter-spacing: -0.045em;
+  }
+
+  &__lead {
+    max-width: 30em;
+    margin: 26px auto 0;
+    color: var(--lav-sub);
+  }
+}
+
+.sisters {
+  margin-top: 64px;
+
+  p {
+    font-size: 0.9rem;
+    color: var(--lav-sub);
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 16px;
+    list-style: none;
+  }
+}

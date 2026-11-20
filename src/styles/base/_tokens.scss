@@ -1,0 +1,19 @@
+:root {
+  --void: #0a0713; // space black, slightly purple
+  --deep: #140d24;
+  --gatsby: #663399; // Gatsby purple
+  --orchid: #a77bf3;
+  --lav: #e8defe; // body text
+  --lav-sub: #a99cc6;
+  --flare: #ffb46b; // dawn light, used sparingly
+  --line: rgb(232 222 254 / 0.12);
+
+  --display: "Unbounded Variable", "Hiragino Sans", "Noto Sans JP", sans-serif;
+  --body: "Instrument Sans Variable", system-ui, "Hiragino Sans", "Noto Sans JP", sans-serif;
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --gutter: clamp(20px, 5vw, 72px);
+  --max: 1280px;
+
+  color-scheme: dark;
+}

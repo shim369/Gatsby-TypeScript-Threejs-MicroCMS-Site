@@ -1,0 +1,101 @@
+@use "../abstracts/mixins" as *;
+
+.blog {
+  background: rgb(20 13 36 / 0.96);
+}
+
+.posts {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: clamp(24px, 3vw, 44px);
+
+  @include down(md) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.post {
+  display: grid;
+  gap: 18px;
+  color: inherit;
+  text-decoration: none;
+
+  &--lead {
+    grid-row: span 2;
+
+    @include down(md) {
+      grid-row: auto;
+    }
+  }
+
+  &:not(.post--lead) {
+    grid-template-columns: 42% 1fr;
+    align-items: center;
+    gap: 22px;
+
+    @include down(sm) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__cover {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 10;
+    border-radius: 16px;
+    background: var(--void);
+
+    > svg,
+    > img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 1.2s var(--ease);
+    }
+  }
+
+  &:hover &__cover > * {
+    transform: scale(1.05) rotate(-1deg);
+  }
+
+  &__cat {
+    position: absolute;
+    left: 16px;
+    top: 16px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    @include glass(0.6);
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+
+  time {
+    font-size: 0.85rem;
+    color: var(--lav-sub);
+  }
+
+  h3 {
+    margin-top: 8px;
+    font: 500 clamp(1.05rem, 1.4vw, 1.25rem)/1.55 var(--body);
+    text-wrap: pretty;
+
+    span {
+      background: linear-gradient(var(--flare), var(--flare)) 0 100% / 0 1px no-repeat;
+      transition: background-size 0.5s var(--ease);
+    }
+  }
+
+  &--lead h3 {
+    font: 400 clamp(1.3rem, 2.2vw, 1.9rem)/1.4 var(--display);
+    letter-spacing: -0.02em;
+  }
+
+  &:hover h3 span {
+    background-size: 100% 1px;
+  }
+}
+
+.empty {
+  color: var(--lav-sub);
+}

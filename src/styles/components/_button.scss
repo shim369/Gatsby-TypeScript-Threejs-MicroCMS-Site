@@ -1,0 +1,77 @@
+@use "../abstracts/mixins" as *;
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 26px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background 0.3s,
+    color 0.3s,
+    box-shadow 0.3s,
+    transform 0.3s var(--ease);
+
+  svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.35s var(--ease);
+  }
+
+  &:hover svg {
+    transform: translateX(4px);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+
+  &--solid {
+    color: var(--void);
+    background: var(--lav);
+
+    &:hover {
+      background: #fff;
+    }
+  }
+
+  &--ghost {
+    @include outline(rgb(232 222 254 / 0.3));
+
+    &:hover {
+      @include outline(var(--lav));
+    }
+  }
+}
+
+// Small outlined pill linking to a sister site
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: 999px;
+  @include glass(0.5, 8px);
+  @include outline;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    box-shadow 0.3s,
+    color 0.3s;
+
+  &::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--flare);
+  }
+
+  &:hover {
+    @include outline(var(--flare));
+  }
+}

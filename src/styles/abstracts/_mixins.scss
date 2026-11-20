@@ -1,0 +1,24 @@
+@use "sass:map";
+
+$breakpoints: (
+  sm: 600px,
+  md: 900px,
+);
+
+/// Styles below a breakpoint (max-width).
+@mixin down($name) {
+  @media (width <= map.get($breakpoints, $name)) {
+    @content;
+  }
+}
+
+/// Translucent panel floating over the planet.
+@mixin glass($alpha: 0.55, $blur: 6px) {
+  background: rgb(10 7 19 / #{$alpha});
+  backdrop-filter: blur($blur);
+}
+
+/// Pill outlined with the hairline colour.
+@mixin outline($color: var(--line)) {
+  box-shadow: inset 0 0 0 1px $color;
+}
