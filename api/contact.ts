@@ -1,5 +1,4 @@
 import nodemailer from "nodemailer";
-import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 type ContactBody = {
   name?: string;
@@ -8,68 +7,50 @@ type ContactBody = {
   googleReCaptchaToken?: string;
 };
 
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const verifyRecaptcha = async (secret: string, token: string) => {
   const res = await fetch("https://www.google.com/recaptcha/api/siteverify", {
     method: "POST",
     body: new URLSearchParams({ secret, response: token }),
   });
-  const result: {
-    success: boolean;
-    score?: number;
-    action?: string;
-    hostname?: string;
-    "error-codes"?: string[];
-  } = await res.json();
-  const ok =
-    result.success && result.action === "submit" && (result.score ?? 0) >= 0.5;
-  if (!ok) {
-    console.warn(`reCAPTCHA verification failed: ${JSON.stringify(result)}`);
-  }
+  const result: { success: boolean; score?: number; action?: string } = await res.json();
+  const ok = result.success && result.action === "submit" && (result.score ?? 0) >= 0.5;
+  if (!ok) console.warn(`reCAPTCHA verification failed: ${JSON.stringify(result)}`);
   return ok;
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
-    return res.status(405).json({ error: "Method Not Allowed" });
-  }
+const error = (status: number, message: string) =>
+  Response.json({ error: message }, { status });
 
-  const { name, email, message, googleReCaptchaToken }: ContactBody =
-    typeof req.body === "string" ? JSON.parse(req.body) : req.body ?? {};
+// Vercel Function using the Web standard Request / Response API.
+// Other HTTP methods get 405 automatically.
+export async function POST(request: Request) {
+  const body: ContactBody = await request.json().catch(() => ({}));
+  const name = body.name?.trim();
+  const email = body.email?.trim();
+  const message = body.message?.trim();
 
-  if (!name || !email || !message) {
-    return res.status(400).json({ error: "Missing required fields" });
-  }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return res.status(400).json({ error: "Invalid email" });
-  }
+  if (!name || !email || !message) return error(400, "Missing required fields");
+  if (!EMAIL.test(email)) return error(400, "Invalid email");
 
   const { RECAPTCHA_SECRET_KEY, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, CONTACT_TO_EMAIL } =
     process.env;
 
   if (!SMTP_USER || !SMTP_PASS || !CONTACT_TO_EMAIL) {
-    console.error(
-      "Missing env: " +
-        ["SMTP_USER", "SMTP_PASS", "CONTACT_TO_EMAIL"]
-          .filter((k) => !process.env[k])
-          .join(", ")
-    );
-    return res.status(500).json({ error: "Mail is not configured" });
+    const missing = ["SMTP_USER", "SMTP_PASS", "CONTACT_TO_EMAIL"].filter((k) => !process.env[k]);
+    console.error(`Missing env: ${missing.join(", ")}`);
+    return error(500, "Mail is not configured");
   }
 
   if (RECAPTCHA_SECRET_KEY) {
-    if (!googleReCaptchaToken) {
-      console.warn("reCAPTCHA token is missing");
-    }
-    if (
-      !googleReCaptchaToken ||
-      !(await verifyRecaptcha(RECAPTCHA_SECRET_KEY, googleReCaptchaToken))
-    ) {
-      return res.status(403).json({ error: "reCAPTCHA verification failed" });
+    const token = body.googleReCaptchaToken;
+    if (!token || !(await verifyRecaptcha(RECAPTCHA_SECRET_KEY, token))) {
+      return error(403, "reCAPTCHA verification failed");
     }
   }
 
-  const port = Number(SMTP_PORT || "465");
+  const port = Number(SMTP_PORT || 465);
   const transporter = nodemailer.createTransport({
     host: SMTP_HOST || "smtp.gmail.com",
     port,
@@ -87,8 +68,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   } catch (err) {
     console.error("Failed to send contact mail", err);
-    return res.status(500).json({ error: "Failed to send mail" });
+    return error(500, "Failed to send mail");
   }
 
-  return res.status(200).json({ ok: true });
+  return Response.json({ ok: true });
 }
