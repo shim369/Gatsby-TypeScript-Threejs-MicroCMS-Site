@@ -1,49 +1,33 @@
-import * as React from "react"
-import { Link, HeadFC, PageProps } from "gatsby"
+import { Link } from "gatsby";
+import Footer from "../components/Footer";
+import Header from "../components/Header";
+import { ArrowRight } from "../components/Icons";
+import { Seo } from "../components/Seo";
+import { delay } from "../utils/style";
 
-const pageStyles = {
-  color: "#232129",
-  padding: "96px",
-  fontFamily: "-apple-system, Roboto, sans-serif, serif",
-}
-const headingStyles = {
-  marginTop: 0,
-  marginBottom: 64,
-  maxWidth: 320,
-}
-
-const paragraphStyles = {
-  marginBottom: 48,
-}
-const codeStyles = {
-  color: "#8A6534",
-  padding: 4,
-  backgroundColor: "#FFF4DB",
-  fontSize: "1.25rem",
-  borderRadius: 4,
-}
-
-const NotFoundPage: React.FC<PageProps> = () => {
+export default function NotFoundPage() {
   return (
-    <main style={pageStyles}>
-      <h1 style={headingStyles}>Page not found</h1>
-      <p style={paragraphStyles}>
-        Sorry 😔, we couldn’t find what you were looking for.
-        <br />
-        {process.env.NODE_ENV === "development" ? (
-          <>
-            <br />
-            Try creating a page in <code style={codeStyles}>src/pages/</code>.
-            <br />
-          </>
-        ) : null}
-        <br />
-        <Link to="/">Go home</Link>.
-      </p>
-    </main>
-  )
+    <>
+      <Header />
+      <main>
+        <section className="wrap not-found">
+          <p className="not-found__code intro" aria-hidden="true">
+            404
+          </p>
+          <h1 className="intro" style={delay(0.1)}>
+            Lost in orbit.
+          </h1>
+          <p className="intro" style={delay(0.2)}>
+            The page you were looking for doesn't exist, or it has drifted somewhere else.
+          </p>
+          <Link to="/" className="btn btn--solid intro" style={delay(0.3)}>
+            Back to home <ArrowRight />
+          </Link>
+        </section>
+      </main>
+      <Footer />
+    </>
+  );
 }
 
-export default NotFoundPage
-
-export const Head: HeadFC = () => <title>Not found</title>
+export const Head = () => <Seo title="Page not found" />;

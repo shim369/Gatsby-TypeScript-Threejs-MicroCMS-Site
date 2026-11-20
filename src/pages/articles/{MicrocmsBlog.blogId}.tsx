@@ -1,83 +1,67 @@
-import * as React from "react";
-import { useRef } from "react";
-import { graphql, Link, HeadFC, PageProps } from "gatsby";
-import { Queries } from "../../types/graphql";
-import HeaderInner from "../../components/HeaderInner";
+import { graphql, Link, type HeadProps, type PageProps } from "gatsby";
 import Contact from "../../components/Contact";
 import Footer from "../../components/Footer";
-import { useScrollAnimations } from "../../hooks/useScrollAnimations";
+import Header from "../../components/Header";
+import PostCover from "../../components/PostCover";
+import { Seo } from "../../components/Seo";
+import { useReveal } from "../../hooks/useReveal";
 import { formatDate } from "../../utils/formatDate";
-import "../../styles/style.scss";
+import { delay } from "../../utils/style";
 
-const ArticlePage = ({ data }: PageProps<Queries.ArticlePageQuery>) => {
-  const root = useRef<HTMLDivElement>(null);
-  useScrollAnimations(root);
+export default function ArticlePage({ data }: PageProps<Queries.ArticlePageQuery>) {
+  useReveal();
   const post = data.microcmsBlog;
 
   return (
     <>
-      <div className="wrapper" ref={root}>
-        <div className="scroll-progress" aria-hidden="true" />
-        <header className="blog-header">
-          <HeaderInner />
-          <div className="main-read">
-            <h1>
-              <span>Tech Blog</span>
-            </h1>
-          </div>
-        </header>
-        <main>
-          <section className="article-section">
-            <div className="container">
-              <article className="blog-detail">
-                {post?.category?.name && (
-                  <span className="category-chip">{post.category.name}</span>
-                )}
-                <h1 data-reveal>{post?.title}</h1>
-                <div className="date" data-reveal>
-                  <i className="material-icons">schedule</i>
-                  {formatDate(post?.publishedAt)}
-                </div>
-                {post?.eyecatch?.url && (
-                  <div className="eyecatch" data-reveal>
-                    <img src={post.eyecatch.url} alt="" />
-                  </div>
-                )}
-                <div
-                  className="blog-detail-area"
-                  dangerouslySetInnerHTML={{ __html: post?.content ?? "" }}
-                />
-                <Link to="/#a03" className="back-link">
-                  ← Back to Blog
-                </Link>
-              </article>
+      <div className="progress" aria-hidden="true" />
+      <Header />
+      <main>
+        <article className="article">
+          <div className="wrap article__in">
+            <div className="article__meta intro" style={delay(0.05)}>
+              {post?.category?.name && <span className="article__cat">{post.category.name}</span>}
+              <time dateTime={post?.publishedAt ?? undefined}>{formatDate(post?.publishedAt)}</time>
             </div>
-          </section>
-          <Contact />
-        </main>
-        <Footer />
-      </div>
+            <h1 className="intro" style={delay(0.15)}>
+              {post?.title}
+            </h1>
+            <div className="article__cover intro" style={delay(0.3)}>
+              <PostCover eyecatch={post?.eyecatch} seed={0} width={1520} eager />
+            </div>
+            <div className="prose" dangerouslySetInnerHTML={{ __html: post?.content ?? "" }} />
+            <Link to="/#blog" className="btn btn--ghost article__back">
+              ← Back to Blog
+            </Link>
+          </div>
+        </article>
+        <Contact />
+      </main>
+      <Footer />
     </>
   );
-};
+}
 
-export default ArticlePage;
-
-export const Head: HeadFC<Queries.ArticlePageQuery> = ({ data }) => (
-  <title>{data.microcmsBlog?.title ?? "GATSBY BASE"} | GATSBY BASE</title>
+export const Head = ({ data }: HeadProps<Queries.ArticlePageQuery>) => (
+  <Seo
+    title={data.microcmsBlog?.title ?? undefined}
+    image={data.microcmsBlog?.eyecatch?.url ?? undefined}
+  />
 );
 
 export const query = graphql`
-  query ArticlePage($id: String) {
+  query ArticlePage($id: String!) {
     microcmsBlog(id: { eq: $id }) {
       title
       content
       publishedAt
-      eyecatch {
-        url
-      }
       category {
         name
+      }
+      eyecatch {
+        url
+        width
+        height
       }
     }
   }
