@@ -11,7 +11,7 @@ Gatsby・TypeScript・Three.js で作ったポートフォリオ兼ブログで�
 | 分野             | 使用技術                                                  |
 | ---------------- | --------------------------------------------------------- |
 | フレームワーク   | Gatsby 5.16 / React 19                                    |
-| 言語             | TypeScript 7                                              |
+| 言語             | TypeScript 6                                              |
 | 3D               | Three.js r187                                             |
 | スタイル         | Sass（役割ごとに分割した SCSS）、セルフホストの可変フォント |
 | コンテンツ       | microCMS（`gatsby-source-microcms`）                      |
@@ -83,6 +83,7 @@ reCAPTCHA を使う場合は 2 つのキーを必ずセットで設定してく�
 
 ```text
 api/contact.ts            お問い合わせ用の Vercel Function
+api/tsconfig.json         Vercel で関数を CommonJS として出力させる設定
 gatsby-browser.ts         グローバルスタイルとフォント
 gatsby-ssr.ts             <html lang> の設定
 src/
@@ -110,5 +111,7 @@ Vercel でリポジトリをインポートすると Gatsby として認識さ�
 
 ## 補足
 
+- TypeScript は 6.x にしています。Vercel は `api/` をプロジェクトの `typescript` パッケージでコンパイルし、その JavaScript API（`readConfigFile`、`transpileModule`）を呼びます。ネイティブ版の TypeScript 7 にはこの API がありません。
+- `api/tsconfig.json` で関数を CommonJS として出力させています。`package.json` に `"type": "module"` が無いため、ESM で出力すると関数の読み込み時にクラッシュします。
 - `package.json` の `overrides` で `sharp` を新しいバージョンに差し替えています。Gatsby の optional 依存 `gatsby-sharp` は今も sharp 0.32 を要求しますが、このバージョンには最近の Node 向けのビルド済みバイナリが無く、ソースからのビルドにも失敗するためです。このサイトでは sharp による画像処理はしていません。
 - HTML のビルド中に `ERROR UNKNOWN` と `punycode` の非推奨警告が表示されることがあります。Gatsby の依存パッケージが出しているもので、出力には影響しません。

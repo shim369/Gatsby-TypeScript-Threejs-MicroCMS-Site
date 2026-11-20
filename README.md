@@ -11,7 +11,7 @@ Live site: <https://gatsbybase.vercel.app/>
 | Area         | Tools                                                     |
 | ------------ | --------------------------------------------------------- |
 | Framework    | Gatsby 5.16, React 19                                     |
-| Language     | TypeScript 7                                              |
+| Language     | TypeScript 6                                              |
 | 3D           | Three.js r187                                             |
 | Styles       | Sass (SCSS modules split by role), self-hosted variable fonts |
 | Content      | microCMS (`gatsby-source-microcms`)                       |
@@ -83,6 +83,7 @@ The site reads one list API, `blogs`:
 
 ```text
 api/contact.ts            Vercel Function for the contact form
+api/tsconfig.json         Makes Vercel emit the function as CommonJS
 gatsby-browser.ts         Global styles and fonts
 gatsby-ssr.ts             <html lang>
 src/
@@ -110,5 +111,7 @@ Pages are static, so publishing a post in microCMS needs a rebuild. To do this a
 
 ## Notes
 
+- TypeScript stays on 6.x. Vercel compiles `api/` with the project's own `typescript` package and calls its JavaScript API (`readConfigFile`, `transpileModule`). TypeScript 7, the native port, no longer provides that API.
+- `api/tsconfig.json` makes the function compile to CommonJS. `package.json` has no `"type": "module"`, so ESM output would crash when the function loads.
 - `package.json` overrides `sharp` with a current version. Gatsby's optional `gatsby-sharp` still asks for sharp 0.32, which has no prebuilt binary for recent Node versions and fails to build from source. This site doesn't process images with sharp.
 - During the HTML build you may see `ERROR UNKNOWN` followed by a `punycode` deprecation warning. It comes from a Gatsby dependency and doesn't affect the output.
