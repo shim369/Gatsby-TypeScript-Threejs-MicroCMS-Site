@@ -24,9 +24,9 @@ Gatsby・TypeScript・Three.js で作ったポートフォリオ兼ブログで�
 - **microCMS の静的ブログ**: 記事ページは File System Route API（`{MicrocmsBlog.blogId}.tsx`）で生成します。アイキャッチが無い記事には、自動生成した惑星のイラストを表示します。アイキャッチは microCMS の画像 API でリサイズし、WebP で配信します。
 - **お問い合わせフォーム**: React 19 の `useActionState` を使い、入力欄を離れたときと送信時に入力をチェックします。送信先は Web 標準の `Request` / `Response` で書いた Vercel Function（`api/contact.ts`）です。
 - **新しいブラウザ機能で JavaScript を減らす**:
-  - モバイルメニューは Popover API。Esc キーや外側クリックで閉じる動作、フォーカス管理はブラウザに任せています。
+  - モバイルメニューは Popover API。Esc キーや外側クリックで閉じる動作、フォーカス管理はブラウザに任せています。`@starting-style` でフェードインし、開いている間は `body:has(:popover-open)` でページのスクロールを止めます。
   - 読了プログレスバーは CSS スクロールタイムライン（`animation-timeline: scroll()`）で動かしています。
-  - ヒーローの登場は CSS アニメーション。フォームには `:has()`・`@starting-style`・`field-sizing` を使っています。
+  - ヒーローの登場は CSS アニメーション。メッセージ欄は `field-sizing` で入力量に合わせて広がります。
 - **アクセシビリティ**: `prefers-reduced-motion` で動きを止めます。キーボードのフォーカスをはっきり表示し、表示中のセクションを `aria-current` で示し、エラー文を各入力欄に関連付けています。
 - **型安全な GraphQL**: Gatsby 組み込みの GraphQL Typegen が `Queries.*` 型を生成します。
 
@@ -51,8 +51,10 @@ npm run develop                    # http://localhost:8000
 | `CONTACT_TO_EMAIL`          | ○    | お問い合わせを受け取るアドレス                 |
 | `SMTP_HOST` / `SMTP_PORT`   |      | 既定値は `smtp.gmail.com` / `465`              |
 | `SMTP_USER` / `SMTP_PASS`   | ○    | SMTP の認証情報（Gmail ならアプリパスワード）  |
-| `RECAPTCHA_SECRET_KEY`      |      | 設定するとサーバー側で reCAPTCHA v3 を検証     |
+| `RECAPTCHA_SECRET_KEY`      |      | reCAPTCHA v3 のシークレットキー（サーバーで検証） |
 | `GATSBY_RECAPTCHA_SITE_KEY` |      | reCAPTCHA v3 のサイトキー（ブラウザに公開）    |
+
+reCAPTCHA を使う場合は 2 つのキーを必ずセットで設定してください。シークレットキーだけだとブラウザからトークンが送られず、すべての送信が拒否されます。
 
 ローカルでは、`gatsby-config.ts` が Node 組み込みの `process.loadEnvFile` で `.env.<NODE_ENV>` を読み込みます。Vercel ではプロジェクト設定で環境変数を登録してください。
 

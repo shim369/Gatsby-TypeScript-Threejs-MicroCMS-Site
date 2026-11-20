@@ -24,9 +24,9 @@ Live site: <https://gatsbybase.vercel.app/>
 - **Static blog from microCMS**: article pages come from the File System Route API (`{MicrocmsBlog.blogId}.tsx`). When a post has no eyecatch, a generated planet illustration is shown instead. Eyecatch images are resized and served as WebP through microCMS's image API.
 - **Contact form**: built on React 19 `useActionState`, with validation when a field loses focus and when the form is submitted. Messages go to a Vercel Function (`api/contact.ts`) that uses the Web standard `Request`/`Response` API.
 - **Modern platform features, little JavaScript**:
-  - The mobile menu uses the Popover API, so Esc, light dismiss and focus handling come from the browser.
+  - The mobile menu uses the Popover API, so Esc, light dismiss and focus handling come from the browser. It fades in with `@starting-style`, and `body:has(:popover-open)` locks page scrolling while it is open.
   - The reading progress bar runs on a CSS scroll timeline (`animation-timeline: scroll()`).
-  - The hero intro is a CSS animation, and the form uses `:has()`, `@starting-style` and `field-sizing`.
+  - The hero intro is a CSS animation, and the message box grows with its content through `field-sizing`.
 - **Accessibility**: `prefers-reduced-motion` turns off motion, keyboard focus is clearly visible, the current section is marked with `aria-current`, and form errors are linked to their fields.
 - **Type-safe GraphQL**: Gatsby's built-in GraphQL Typegen produces the `Queries.*` types.
 
@@ -51,8 +51,10 @@ npm run develop                    # http://localhost:8000
 | `CONTACT_TO_EMAIL`          | yes      | Address that receives contact messages            |
 | `SMTP_HOST` / `SMTP_PORT`   | no       | Defaults to `smtp.gmail.com` / `465`              |
 | `SMTP_USER` / `SMTP_PASS`   | yes      | SMTP credentials (use an app password for Gmail)  |
-| `RECAPTCHA_SECRET_KEY`      | no       | Turns on server-side reCAPTCHA v3 verification    |
+| `RECAPTCHA_SECRET_KEY`      | no       | reCAPTCHA v3 secret key, checked on the server    |
 | `GATSBY_RECAPTCHA_SITE_KEY` | no       | reCAPTCHA v3 site key, exposed to the browser     |
+
+To use reCAPTCHA, set both keys together. If only the secret key is set, the browser sends no token, so every message is rejected.
 
 Locally, `gatsby-config.ts` loads `.env.<NODE_ENV>` with Node's built-in `process.loadEnvFile`. On Vercel, set the variables in the project settings.
 
