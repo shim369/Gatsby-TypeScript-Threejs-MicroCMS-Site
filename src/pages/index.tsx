@@ -162,7 +162,7 @@ export const Head = (_: HeadProps) => <Seo />;
 
 export const query = graphql`
   query IndexPage {
-    allMicrocmsBlog(sort: { publishedAt: DESC }, limit: 3) {
+    allMicrocmsBlog(sort: { publishedAt: DESC }, limit: 4) {
       nodes {
         id
         gatsbyPath(filePath: "/articles/{MicrocmsBlog.blogId}")

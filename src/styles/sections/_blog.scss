@@ -21,7 +21,7 @@
   text-decoration: none;
 
   &--lead {
-    grid-row: span 2;
+    grid-row: span 3;
 
     @include down(md) {
       grid-row: auto;
